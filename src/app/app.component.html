@@ -1,0 +1,61 @@
+<div id="board">
+  <div class="attempt" *ngFor="let attempt of board.attempts; let i = index">
+    <div
+      class="letter"
+      [ngClass]="tile.status"
+      *ngFor="let tile of attempt.tiles; let j = index"
+    >
+      {{ tile.letter }}
+    </div>
+  </div>
+
+  <div class="message">{{ message }}</div>
+
+  <div>
+    <button type="button" class="key" [ngClass]="keyMap.q">Q</button>
+    <button type="button" class="key" [ngClass]="keyMap.w">W</button>
+    <button type="button" class="key" [ngClass]="keyMap.e">E</button>
+    <button type="button" class="key" [ngClass]="keyMap.r">R</button>
+    <button type="button" class="key" [ngClass]="keyMap.t">T</button>
+    <button type="button" class="key" [ngClass]="keyMap.y">Y</button>
+    <button type="button" class="key" [ngClass]="keyMap.u">U</button>
+    <button type="button" class="key" [ngClass]="keyMap.i">I</button>
+    <button type="button" class="key" [ngClass]="keyMap.o">O</button>
+    <button type="button" class="key" [ngClass]="keyMap.p">P</button>
+  </div>
+  <div>
+    <button type="button" class="key" [ngClass]="keyMap.a">A</button>
+    <button type="button" class="key" [ngClass]="keyMap.s">S</button>
+    <button type="button" class="key" [ngClass]="keyMap.d">D</button>
+    <button type="button" class="key" [ngClass]="keyMap.f">F</button>
+    <button type="button" class="key" [ngClass]="keyMap.g">G</button>
+    <button type="button" class="key" [ngClass]="keyMap.h">H</button>
+    <button type="button" class="key" [ngClass]="keyMap.j">J</button>
+    <button type="button" class="key" [ngClass]="keyMap.k">K</button>
+    <button type="button" class="key" [ngClass]="keyMap.l">L</button>
+  </div>
+  <div>
+    <button type="button" class="key">ENTER</button>
+    <button type="button" class="key" [ngClass]="keyMap.z">Z</button>
+    <button type="button" class="key" [ngClass]="keyMap.x">X</button>
+    <button type="button" class="key" [ngClass]="keyMap.c">C</button>
+    <button type="button" class="key" [ngClass]="keyMap.v">V</button>
+    <button type="button" class="key" [ngClass]="keyMap.b">B</button>
+    <button type="button" class="key" [ngClass]="keyMap.n">N</button>
+    <button type="button" class="key" [ngClass]="keyMap.m">M</button>
+    <button type="button" class="key">
+      <img src="../assets/backspace-icon.svg" alt="Backspace" />
+    </button>
+  </div>
+
+  <div class="guidebox">
+    <div class="letter matched guide">A</div>
+    <div class="guidetext">This letter is in the right position.</div>
+    <div class="letter missed guide">A</div>
+    <div class="guidetext">This letter is in the wrong position.</div>
+    <div class="letter wrong guide">A</div>
+    <div class="guidetext">This letter is not in the word.</div>
+  </div>
+</div>
+
+<!-- <pre>{{ board | json }}</pre> -->
