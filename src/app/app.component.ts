@@ -51,10 +51,19 @@ export class AppComponent implements OnInit {
 
   totalAttempts = ATTEMPTS;
   totalLetters = LETTERS;
-  currentAttempt = 0;
-  currentTile = 0;
-  message = '';
-  solved = false;
+  currentAttempt = signal<number>(0);
+  currentTile = signal<number>(0);
+  attempts = computed(() => {
+    return this.currentAttempt() > 1 ? 'attempts' : 'attempt';
+  });
+  message = computed(() => {
+    if (this.solved()) {
+      return `Congratulations! You solved the word in ${this.currentAttempt()} ${this.attempts()}`;
+    } else {
+      return ``;
+    }
+  });
+  solved = signal(false);
 
   @HostListener('body:keyup', ['$event'])
   keyEvent({ key, which }: KeyboardEvent) {
@@ -62,31 +71,37 @@ export class AppComponent implements OnInit {
       this.deleteLetter();
     } else if (key === ESCAPE) {
       this.resetGame();
-    } else if (key === ENTER && this.isAtEnd(this.currentTile)) {
-      this.checkAttempt(this.currentAttempt);
-    } else if (this.isValid(which) && !this.isAtEnd(this.currentTile)) {
+    } else if (key === ENTER && this.isAtEnd(this.currentTile())) {
+      this.checkAttempt(this.currentAttempt());
+    } else if (this.isValid(which) && !this.isAtEnd(this.currentTile())) {
       this.addLetter(key);
     }
+  }
+
+  constructor() {
+    effect(() => {
+      if (this.currentTile() > 0) {
+        console.log(
+          `Trasmitting "${this.getAttemptedWord(
+            this.currentAttempt()
+          )}" to realtime stream`
+        );
+      }
+    });
   }
 
   ngOnInit() {
     this.resetGame();
   }
 
-  updateStream(attempt: number) {
-    console.log(
-      `Trasmitting "${this.getAttemptedWord(attempt)}" to realtime stream`
-    );
-  }
-
   addLetter(key: string) {
-    this.updateTile(this.currentAttempt, this.currentTile, key);
+    this.updateTile(this.currentAttempt(), this.currentTile(), key);
     this.nextTile();
   }
 
   deleteLetter() {
     this.prevTile();
-    this.updateTile(this.currentAttempt, this.currentTile, '');
+    this.updateTile(this.currentAttempt(), this.currentTile(), '');
   }
 
   checkAttempt(attempt: number) {
@@ -98,9 +113,8 @@ export class AppComponent implements OnInit {
     this.nextAttempt();
     this.resetCurrentTile();
 
-    if (this.isChosenWord(word)) {
-      const attempts = this.currentAttempt > 1 ? 'attempts' : 'attempt';
-      this.message = `Congratulations! You solved the word in ${this.currentAttempt} ${attempts}`;
+    if (this.chosenWord == word) {
+      this.solved.set(true);
     }
   }
 
@@ -146,15 +160,16 @@ export class AppComponent implements OnInit {
   }
 
   nextAttempt() {
-    this.currentAttempt += 1;
+    this.currentAttempt.update(() => this.currentAttempt() + 1);
   }
 
   nextTile() {
-    this.currentTile += 1;
+    this.currentTile.update(() => this.currentTile() + 1);
   }
 
   prevTile() {
-    if (this.currentTile > 0) this.currentTile -= 1;
+    if (this.currentTile() > 0)
+      this.currentTile.update(() => this.currentTile() - 1);
   }
 
   updateTile(attempt: number, tile: number, key: string) {
@@ -186,15 +201,15 @@ export class AppComponent implements OnInit {
   }
 
   resetSolved() {
-    this.solved = false;
+    this.solved.set(false);
   }
 
   resetCurrentAttempt() {
-    this.currentAttempt = 0;
+    this.currentAttempt.set(0);
   }
 
   resetCurrentTile() {
-    this.currentTile = 0;
+    this.currentTile.set(0);
   }
 
   resetKeyMap() {
